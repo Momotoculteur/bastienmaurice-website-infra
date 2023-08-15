@@ -1,6 +1,6 @@
 # Bucket pour les requêtes vers www
 resource "aws_s3_bucket" "www_bucket" {
-  bucket = "www.${var.bucket_name}"
+  bucket = "www.${local.bucket_name}"
   tags = {
     terraform = "true"
     type      = "website-infra"
@@ -9,7 +9,7 @@ resource "aws_s3_bucket" "www_bucket" {
 
 # Bucket pour les requêtes non-www
 resource "aws_s3_bucket" "root_bucket" {
-  bucket = var.bucket_name
+  bucket = local.bucket_name
 }
 
 resource "aws_s3_bucket_ownership_controls" "root_owner" {
@@ -54,7 +54,7 @@ resource "aws_s3_bucket_website_configuration" "config_root" {
 resource "aws_s3_bucket_website_configuration" "config_www" {
   bucket = aws_s3_bucket.www_bucket.id
   redirect_all_requests_to {
-    host_name = var.domain_name
+    host_name = local.domain_name
     protocol  = "https"
   }
 }

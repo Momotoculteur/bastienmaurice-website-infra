@@ -5,13 +5,13 @@ locals {
 resource "aws_cloudfront_distribution" "cloudfront" {
   origin {
     domain_name = aws_s3_bucket.root_bucket.bucket_domain_name
-    origin_id   = var.domain_name
+    origin_id   = local.domain_name
   }
 
   enabled             = true
   is_ipv6_enabled     = true
   default_root_object = "index.html"
-  aliases             = [var.domain_name]
+  aliases             = [local.domain_name]
   price_class         = "PriceClass_100"
 
   viewer_certificate {
@@ -22,7 +22,7 @@ resource "aws_cloudfront_distribution" "cloudfront" {
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = var.domain_name
+    target_origin_id = local.domain_name
 
     forwarded_values {
       query_string = true
