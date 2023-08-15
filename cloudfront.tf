@@ -3,6 +3,8 @@ locals {
 }
 
 resource "aws_cloudfront_distribution" "cloudfront" {
+  tags = local.commonTags
+  
   origin {
     domain_name = aws_s3_bucket.root_bucket.bucket_domain_name
     origin_id   = local.domain_name
@@ -11,11 +13,15 @@ resource "aws_cloudfront_distribution" "cloudfront" {
   enabled             = true
   is_ipv6_enabled     = true
   default_root_object = "index.html"
-  aliases             = [local.domain_name]
+  aliases             = ["${local.domain_name}", "www.${local.domain_name}"]
   price_class         = "PriceClass_100"
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    #cloudfront_default_certificate = true
+    acm_certificate_arn      = aws_acm_certificate_validation.certificate_validator.certificate_arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.1_2016"
+
   }
 
 
@@ -40,8 +46,8 @@ resource "aws_cloudfront_distribution" "cloudfront" {
 
   restrictions {
     geo_restriction {
-      restriction_type = "whitelist"
-      locations        = ["EU"]
+      restriction_type = "none"
+      locations        = []
     }
   }
 

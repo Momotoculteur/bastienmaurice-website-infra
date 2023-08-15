@@ -1,10 +1,7 @@
 # Bucket pour les requêtes vers www
 resource "aws_s3_bucket" "www_bucket" {
   bucket = "www.${local.bucket_name}"
-  tags = {
-    terraform = "true"
-    type      = "website-infra"
-  }
+  tags = local.commonTags
 }
 
 # Bucket pour les requêtes non-www
@@ -77,6 +74,6 @@ resource "aws_s3_bucket_policy" "policy_root" {
           "${aws_s3_bucket.root_bucket.arn}/*",
         ]
       },
-
+    ]
   })
 }

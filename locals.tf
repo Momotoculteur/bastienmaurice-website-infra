@@ -1,6 +1,6 @@
 locals {
   domain_name         = "bastienmaurice.fr"
-  bucket_name         = "bastienmaruice.fr"
+  bucket_name         = "bastienmaurice.fr"
   bucket_state_name   = "bastienmaurice-website-infra-state"
   dynamodb_state_name = "bastienmaurice-website-infra-state"
   commonTags = {
