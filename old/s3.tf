@@ -77,6 +77,6 @@ resource "aws_s3_bucket_policy" "policy_root" {
           "${aws_s3_bucket.root_bucket.arn}/*",
         ]
       },
-    ]
+
   })
 }
