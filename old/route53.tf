@@ -1,5 +1,5 @@
 resource "aws_route53_zone" "r53_zone" {
-  name = var.domain_name
+  name = local.domain_name
   tags = {
     terraform = "true"
     type      = "website-infra"
@@ -8,7 +8,7 @@ resource "aws_route53_zone" "r53_zone" {
 
 resource "aws_route53_record" "r53_record_root" {
   zone_id = aws_route53_zone.r53_zone.id
-  name    = var.domain_name
+  name    = local.domain_name
   type    = "A"
 
   alias {
@@ -20,7 +20,7 @@ resource "aws_route53_record" "r53_record_root" {
 
 resource "aws_route53_record" "r53_record_www" {
   zone_id = aws_route53_zone.r53_zone.id
-  name    = "www.${var.domain_name}"
+  name    = "www.${local.domain_name}"
   type    = "A"
 
   alias {
