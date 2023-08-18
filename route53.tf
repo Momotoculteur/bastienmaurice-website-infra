@@ -3,15 +3,19 @@ resource "aws_route53_zone" "r53_zone" {
   tags = local.commonTags
 }
 
+/*
 resource "aws_route53_record" "record_validator" {
-  /*
+  
   count   = 2
   zone_id = aws_route53_zone.r53_zone.id
 
   name    = element(aws_acm_certificate.certificate.domain_validation_options.*.reource_record_name, count.index)
   type    = element(aws_acm_certificate.certificate.domain_validation_options.*.reource_record_type, count.index)
   records = [element(aws_acm_certificate.certificate.domain_validation_options.*.reource_record_value, count.index)]
-  */
+  
+
+
+
   for_each = {
     for dvo in aws_acm_certificate.certificate.domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name
@@ -29,8 +33,10 @@ resource "aws_route53_record" "record_validator" {
 
 }
 
+*/
 
-/*
+
+
 resource "aws_route53_record" "r53_record_root" {
   zone_id = aws_route53_zone.r53_zone.id
   name    = local.domain_name
@@ -42,7 +48,7 @@ resource "aws_route53_record" "r53_record_root" {
     evaluate_target_health = true
   }
 }
-*/
+
 /*
 resource "aws_route53_record" "r53_record_www" {
   zone_id = aws_route53_zone.r53_zone.id
