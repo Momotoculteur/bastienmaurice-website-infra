@@ -8,4 +8,9 @@ locals {
     orga          = "Momotoculteur"
     repositoryFor = "bastienmaurice-website"
   }
+  gha_runners_tags = {
+    createdBy     = "terraform"
+    orga          = "Momotoculteur"
+    repositoryFor = "github-actions-runners"
+  }
 }

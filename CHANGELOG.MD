@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.3] - 2023-08-15
 ### Added
 - Migration de l'infra sur un S3 backend
+- Ajout OIDC github
+- Ajout role + policies pour les github action
 
 ## [0.0.2] - 2023-08-15
 ### Added
