@@ -52,21 +52,12 @@ resource "aws_s3_bucket_website_configuration" "config_root" {
 resource "aws_s3_bucket_website_configuration" "config_www" {
   bucket = aws_s3_bucket.www_bucket.id
   redirect_all_requests_to {
-    # protocol = "https"
+    # a changer une fois le certif
+    protocol = "http"
     host_name = local.domain_name
   }
 }
 
-/*
-# Permer de router les requêtes bucket www vers non www
-resource "aws_s3_bucket_website_configuration" "config_www" {
-  bucket = aws_s3_bucket.www_bucket.id
-  redirect_all_requests_to {
-    host_name = local.domain_name
-    protocol  = "https"
-  }
-}
-*/
 resource "aws_s3_bucket_policy" "policy_root" {
   bucket = aws_s3_bucket.root_bucket.id
 
