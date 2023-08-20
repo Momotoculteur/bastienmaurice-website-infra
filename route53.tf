@@ -1,8 +1,10 @@
+# Création de la zone
 resource "aws_route53_zone" "r53_zone" {
   name = local.domain_name
   tags = local.commonTags
 }
 
+# Record pour le bucket principal servi par Cloudfront
 resource "aws_route53_record" "r53_record_root" {
   zone_id = aws_route53_zone.r53_zone.id
   name    = local.domain_name
@@ -15,7 +17,7 @@ resource "aws_route53_record" "r53_record_root" {
   }
 }
 
-
+# Record pour le bucket secondaire pour la redirection
 resource "aws_route53_record" "r53_record_www" {
   zone_id = aws_route53_zone.r53_zone.id
   name    = "www.${local.domain_name}"

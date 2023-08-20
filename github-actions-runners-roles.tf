@@ -1,7 +1,9 @@
+# Recup du certificat
 data "tls_certificate" "github" {
   url = "https://token.actions.githubusercontent.com/.well-known/openid-configuration"
 }
 
+# Création du provider de token
 resource "aws_iam_openid_connect_provider" "github_actions_oidc_provider" {
   url             = "https://token.actions.githubusercontent.com"
   client_id_list  = ["sts.amazonaws.com"]
@@ -12,6 +14,7 @@ resource "aws_iam_openid_connect_provider" "github_actions_oidc_provider" {
 resource "aws_iam_role" "github_action_role" {
   name     = "github-actions-assume-role-access"
 
+  # Qui a le droit d'assume le rôle d'accès aux S3 depuis les pipelines
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -36,6 +39,7 @@ resource "aws_iam_role" "github_action_role" {
   tags = local.gha_runners_tags
 }
 
+# Role assume par nos runners dans les pipelines github
 resource "aws_iam_role_policy" "github_action_role_permissions" {
   name = "github-actions-permissions"
   role = aws_iam_role.github_action_role.id

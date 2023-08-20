@@ -1,3 +1,4 @@
+# Bucket qui contient le tf state du projet
 resource "aws_s3_bucket" "s3_state" {
   bucket = local.bucket_state_name
   tags   = local.commonTags
@@ -7,6 +8,7 @@ resource "aws_s3_bucket" "s3_state" {
   }
 }
 
+# Activate le versionning pour rollback si soucis
 resource "aws_s3_bucket_versioning" "s3_versionning" {
   bucket = aws_s3_bucket.s3_state.id
 
@@ -15,6 +17,7 @@ resource "aws_s3_bucket_versioning" "s3_versionning" {
   }
 }
 
+# On crypte le content
 resource "aws_s3_bucket_server_side_encryption_configuration" "s3_encryption" {
   bucket = aws_s3_bucket.s3_state.id
 
@@ -25,6 +28,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "s3_encryption" {
   }
 }
 
+# On lock les ACL
 resource "aws_s3_bucket_public_access_block" "s3_access" {
   bucket = aws_s3_bucket.s3_state.id
 
