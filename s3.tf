@@ -1,14 +1,14 @@
 
 resource "aws_s3_bucket" "www_bucket" {
   bucket = "www.${local.bucket_name}"
-  tags = local.commonTags
+  tags   = local.commonTags
 }
 
 
 # Bucket pour les requêtes non-www
 resource "aws_s3_bucket" "root_bucket" {
   bucket = local.bucket_name
-  tags = local.commonTags
+  tags   = local.commonTags
 }
 
 resource "aws_s3_bucket_ownership_controls" "root_owner" {
@@ -36,6 +36,7 @@ resource "aws_s3_bucket_acl" "acl_root" {
   ]
 }
 
+/*
 resource "aws_s3_bucket_website_configuration" "config_root" {
   bucket = aws_s3_bucket.root_bucket.id
 
@@ -48,16 +49,49 @@ resource "aws_s3_bucket_website_configuration" "config_root" {
   }
 
 }
+*/
 
 resource "aws_s3_bucket_website_configuration" "config_www" {
   bucket = aws_s3_bucket.www_bucket.id
+  
   redirect_all_requests_to {
-    # a changer une fois le certif
-    protocol = "http"
+    protocol  = "https"
     host_name = local.domain_name
   }
 }
 
+
+resource "aws_s3_bucket_policy" "policy_root" {
+  bucket = aws_s3_bucket.root_bucket.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowCloudFrontServicePrincipalReadOnly"
+        Effect = "Allow"
+        Principal : {
+          "Service" : "cloudfront.amazonaws.com"
+        },
+        Action = [
+          "s3:GetObject",
+        ]
+        Resource = [
+          "${aws_s3_bucket.root_bucket.arn}/*"
+        ],
+        Condition : {
+          StringEquals : {
+            "AWS:SourceArn" = [
+              aws_cloudfront_distribution.cloudfront.arn
+            ]
+          }
+        }
+      },
+    ]
+  })
+}
+
+/*
 resource "aws_s3_bucket_policy" "policy_root" {
   bucket = aws_s3_bucket.root_bucket.id
 
@@ -79,3 +113,5 @@ resource "aws_s3_bucket_policy" "policy_root" {
     ]
   })
 }
+
+*/
