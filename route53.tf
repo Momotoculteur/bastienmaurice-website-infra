@@ -1,21 +1,39 @@
+# Création de la zone
 resource "aws_route53_zone" "r53_zone" {
   name = local.domain_name
   tags = local.commonTags
 }
 
-/*
-resource "aws_route53_record" "record_validator" {
-  
-  count   = 2
+# Record pour le bucket principal servi par Cloudfront
+resource "aws_route53_record" "r53_record_root" {
   zone_id = aws_route53_zone.r53_zone.id
+  name    = local.domain_name
+  type    = "A"
 
-  name    = element(aws_acm_certificate.certificate.domain_validation_options.*.reource_record_name, count.index)
-  type    = element(aws_acm_certificate.certificate.domain_validation_options.*.reource_record_type, count.index)
-  records = [element(aws_acm_certificate.certificate.domain_validation_options.*.reource_record_value, count.index)]
-  
+  alias {
+    name                   = aws_cloudfront_distribution.cloudfront.domain_name
+    zone_id                = aws_cloudfront_distribution.cloudfront.hosted_zone_id
+    evaluate_target_health = true
+  }
+}
+
+# Record pour le bucket secondaire pour la redirection
+resource "aws_route53_record" "r53_record_www" {
+  zone_id = aws_route53_zone.r53_zone.id
+  name    = "www.${local.domain_name}"
+  type    = "A"
+
+  alias {
+    name                   = aws_s3_bucket_website_configuration.config_www.website_domain
+    zone_id                = aws_s3_bucket.root_bucket.hosted_zone_id
+    evaluate_target_health = true
+  }
+}
 
 
-
+# Validation du certificat par DNS ; 
+# Faut ajouter des records dans notre zone
+resource "aws_route53_record" "acm_certificat_cname" {
   for_each = {
     for dvo in aws_acm_certificate.certificate.domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name
@@ -29,36 +47,5 @@ resource "aws_route53_record" "record_validator" {
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = aws_route53_zone.r53_zone.id
-
+  zone_id         = aws_route53_zone.r53_zone.zone_id
 }
-
-*/
-
-
-
-resource "aws_route53_record" "r53_record_root" {
-  zone_id = aws_route53_zone.r53_zone.id
-  name    = local.domain_name
-  type    = "A"
-
-  alias {
-    name                   = aws_s3_bucket_website_configuration.config_root.website_domain
-    zone_id                = aws_s3_bucket.root_bucket.hosted_zone_id
-    evaluate_target_health = true
-  }
-}
-
-
-resource "aws_route53_record" "r53_record_www" {
-  zone_id = aws_route53_zone.r53_zone.id
-  name    = "www.${local.domain_name}"
-  type    = "A"
-
-  alias {
-    name                   = aws_s3_bucket_website_configuration.config_www.website_domain
-    zone_id                = aws_s3_bucket.root_bucket.hosted_zone_id
-    evaluate_target_health = true
-  }
-}
-
